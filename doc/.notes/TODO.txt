@@ -1,1 +1,0 @@
-make symbolic links relative (see: CMakeLists.txt)
