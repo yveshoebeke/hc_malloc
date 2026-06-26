@@ -1,0 +1,212 @@
+<!-- Creator     : groff version 1.24.1 -->
+<!-- CreationDate: Fri Jun 26 18:52:03 2026 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>HC_MALLOC</title>
+
+</head>
+<body>
+
+<h1 align="center">HC_MALLOC</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#PUBLIC FUCTIONS">PUBLIC FUCTIONS</a><br>
+<a href="#INTERNAL FUCTIONS">INTERNAL FUCTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#FILES">FILES</a><br>
+<a href="#LICENSE">LICENSE</a><br>
+<a href="#AUTHOR">AUTHOR</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:6%; margin-top: 1em">hc_malloc - Sets
+up and manages memory allocation arena.</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+
+<p style="margin-left:6%; margin-top: 1em"><b>hc_malloc</b>
+[<i>options</i>] [<i>file</i>...]</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+
+<p style="margin-left:6%; margin-top: 1em"><b>hc_malloc</b>
+is a library written in C that sets up an information
+structure that keeps track of heap allocated memory
+allocations. The functions wrap around the standard memory
+allocation commands and keeps track of the addresses. It
+works seamlessly on Unix, Linux and macOS.</p>
+
+<h2>PUBLIC FUCTIONS
+<a name="PUBLIC FUCTIONS"></a>
+</h2>
+
+
+
+<p style="margin-left:6%; margin-top: 1em"><b>hc_init()</b></p>
+
+<p style="margin-left:15%;">This function should be called
+fairly early in your program. It will set up an array that
+can contain up to 32 address pointer that can automatically
+be expanded in 32 additional pointer locations at the time
+when needed. Capacity and next available index values are
+part of this structure.</p>
+
+<p style="margin-left:6%;"><b>Returns:</b>none <b><br>
+hc_cleanup()</b></p>
+
+<p style="margin-left:15%;">You should call this functions
+at the end of your process. It will free all addresses in
+the address array. The memory allocated for the arena
+structure will be freed as well.</p>
+
+<p style="margin-left:6%;"><b>Returns:</b>none <b><br>
+hc_free(void</b>*addr_pntr)</p>
+
+<p style="margin-left:15%;">Will free the memory allocated
+at the specified address. The address will be removed from
+the array.</p>
+
+<p style="margin-left:6%;"><b>Returns:</b>none <b><br>
+hc_display()</b></p>
+
+<p style="margin-left:15%;">Displays the content of the
+arena structure, including the address array.</p>
+
+<p style="margin-left:6%;"><b>Returns:</b>none <b><br>
+hc_malloc(size_t</b>size)</p>
+
+<p style="margin-left:15%;">Allocates given size memory and
+add it to the array and updates the next index value.</p>
+
+
+<p style="margin-left:6%;"><b>Returns:</b>address<b>pointer
+<br>
+hc_calloc(size_t</b>num_elem,<b>size_t</b>elem_size)</p>
+
+<p style="margin-left:15%;">Allocates requested memory
+block. Size is calculated by multiplying the number of
+element requested by the size of the element. Address will
+be added to the arena array and updates the next index
+value.</p>
+
+
+<p style="margin-left:6%;"><b>Returns:</b>address<b>pointer
+<br>
+hc_realloc(void</b>*old_pntr,<b>size_t</b>size)</p>
+
+<p style="margin-left:15%;">Reallocates the existing memory
+alloction pointed to by the old_pntr argument to a new area
+with the specified size. The original address in the array
+will be updated with the new one.</p>
+
+
+<p style="margin-left:6%;"><b>Returns:</b>address<b>pointer
+<br>
+hc_strdup(void</b>*addr_pntr)</p>
+
+<p style="margin-left:15%;">Copies the content of a string
+pointed to by the addr_pntr. Updates the address array and
+next_index value.</p>
+
+
+<p style="margin-left:6%;"><b>Returns:</b>char<b>address</b>pointer</p>
+
+<h2>INTERNAL FUCTIONS
+<a name="INTERNAL FUCTIONS"></a>
+</h2>
+
+
+
+<p style="margin-left:6%; margin-top: 1em"><b>_hc_address_array_capacity_increase()</b></p>
+
+<p style="margin-left:15%;">This function will be invoked
+when the current capacity of the address array is reached.
+The increments is by 32 address locations each time.</p>
+
+<p style="margin-left:6%;"><b>Returns:</b>none <b><br>
+_hc_address_add(addr_pntr)</b></p>
+
+<p style="margin-left:15%;">Adds an address pointer to the
+address array. Will evoke
+_hc_address_array_capacity_increase() when the current
+capacity is reached</p>
+
+<p style="margin-left:6%;"><b>Returns:</b>none <b><br>
+_hc_address_locate(void</b>*addr_pntr)</p>
+
+<p style="margin-left:15%;">Returns the index of the given
+address pointer.</p>
+
+<p style="margin-left:6%;"><b>Returns:</b>int <b><br>
+
+_hc_address_replace(void</b>*old_pntr,<b>void</b>*new_pntr)</p>
+
+<p style="margin-left:15%;">Locates the given old pointer
+in the address array and replaces it with the new given
+pointer.</p>
+
+<p style="margin-left:6%;"><b>Returns:</b>none</p>
+
+<h2>EXAMPLES
+<a name="EXAMPLES"></a>
+</h2>
+
+
+<h2>FILES
+<a name="FILES"></a>
+</h2>
+
+
+
+<p style="margin-left:6%; margin-top: 1em"><i>/usr/local/share/doc/geheim/README.md</i></p>
+
+<p style="margin-left:15%;">Documentation to this utility,
+also available in html and pdf form.</p>
+
+<h2>LICENSE
+<a name="LICENSE"></a>
+</h2>
+
+
+
+<p style="margin-left:6%; margin-top: 1em"><i>/usr/local/share/doc/hc_alloc/LICENSE</i></p>
+
+<p style="margin-left:15%;">MIT license.</p>
+
+<h2>AUTHOR
+<a name="AUTHOR"></a>
+</h2>
+
+
+
+<p style="margin-left:6%; margin-top: 1em">yves.hoebeke@gmail.com</p>
+<hr>
+</body>
+</html>

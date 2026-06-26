@@ -1,0 +1,39 @@
+# Prerequisites
+*.d
+
+# Object files and libraries
+*.o
+*.ko
+*.obj
+*.elf
+*.a
+*.lib
+*.so
+*.dylib
+
+# Shared objects (dynamic libraries)
+*.so
+*.so.*
+*.dll
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Common build directories (if using Make or CMake)
+build/
+obj/
+.cmake/
+CMakeCache.txt
+CMakeFiles/
+.deploy/
+.tmp/
+
+# IDE and Editor specific files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+

@@ -1,0 +1,86 @@
+.TH HC_MALLOC 3 "JUNE 2026" "1.0.0" "hc_malloc Manual"
+.SH NAME
+hc_malloc \- Sets up and manages memory allocation arena.
+.SH SYNOPSIS
+.B hc_malloc
+[\fIoptions\fR] [\fIfile\fR...]
+.SH DESCRIPTION
+.B hc_malloc
+is a library written in C that sets up an information structure that keeps track of heap allocated memory allocations. The functions wrap around the standard memory allocation commands and keeps track of the addresses. 
+It works seamlessly on Unix, Linux and macOS.
+.SH PUBLIC FUCTIONS
+.TP
+.BR hc_init()
+This function should be called fairly early in your program. 
+It will set up an array that can contain up to 32 address pointer that can automatically be expanded in 32 additional pointer locations at the time when needed. Capacity and next available index values are part of this structure.
+.TP
+.BR Returns: none
+.TP
+.BR hc_cleanup()
+You should call this functions at the end of your process. It will free all addresses in the address array. The memory allocated for the arena structure will be freed as well.
+.TP
+.BR Returns: none
+.TP
+.BR hc_free(void *addr_pntr)
+Will free the memory allocated at the specified address. The address will be removed from the array.
+.TP
+.BR Returns: none
+.TP
+.BR hc_display()
+Displays the content of the arena structure, including the address array.
+.TP
+.BR Returns: none
+.TP
+.BR hc_malloc(size_t size)
+Allocates given size memory and add it to the array and updates the next index value.
+.TP
+.BR Returns: address pointer
+.TP
+.BR hc_calloc(size_t num_elem, size_t elem_size)
+Allocates requested memory block. Size is calculated by multiplying the number of element requested by the size of the element. Address will be added to the arena array and updates the next index value.
+.TP
+.BR Returns: address pointer
+.TP
+.BR hc_realloc(void *old_pntr, size_t size)
+Reallocates the existing memory alloction pointed to by the old_pntr argument to a new area with the specified size. The original address in the array will be updated with the new one.
+.TP
+.BR Returns: address pointer
+.TP
+.BR hc_strdup(void *addr_pntr)
+Copies the content of a string pointed to by the addr_pntr. Updates the address array and next_index value.
+.TP
+.BR Returns: char address pointer
+.SH INTERNAL FUCTIONS
+.TP
+.BR _hc_address_array_capacity_increase()
+This function will be invoked when the current capacity of the address array is reached. The increments is by 32 address locations each time. 
+.TP
+.BR Returns: none
+.TP
+.BR _hc_address_add(addr_pntr)
+Adds an address pointer to the address array. Will evoke _hc_address_array_capacity_increase() when the current capacity is reached
+.TP
+.BR Returns: none
+.TP
+.BR _hc_address_locate(void *addr_pntr)
+Returns the index of the given address pointer.
+.TP
+.BR Returns: int
+.TP
+.BR _hc_address_replace(void *old_pntr, void *new_pntr)
+Locates the given old pointer in the address array and replaces it with the new given pointer.
+.TP
+.BR Returns: none
+.SH EXAMPLES
+.TP
+.SH FILES
+.TP
+.I /usr/local/share/doc/geheim/README.md
+Documentation to this utility, also available in html and pdf form.
+.SH LICENSE
+.TP
+.I /usr/local/share/doc/hc_alloc/LICENSE
+MIT license.
+.SH AUTHOR
+yves.hoebeke@gmail.com
+
