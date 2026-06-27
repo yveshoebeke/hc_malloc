@@ -3,84 +3,169 @@
 hc_malloc \- Sets up and manages memory allocation arena.
 .SH SYNOPSIS
 .B hc_malloc
-[\fIoptions\fR] [\fIfile\fR...]
+[library...] [\fIgcc -o my_program -lhc_malloc my_program.c\fR] 
 .SH DESCRIPTION
 .B hc_malloc
-is a library written in C that sets up an information structure that keeps track of heap allocated memory allocations. The functions wrap around the standard memory allocation commands and keeps track of the addresses. 
-It works seamlessly on Unix, Linux and macOS.
+is a library written in C that sets up an information structure that keeps track of heap memory allocations. It is a wrapper around the standard memory allocation/manipulation functions and keeps track of the addresses. 
+.br
+
+Installation scripts work seamlessly on Unix, Linux and macOS. \fINot tested on MS Windows(tm)\fR.
 .SH PUBLIC FUCTIONS
 .TP
 .BR hc_init()
 This function should be called fairly early in your program. 
 It will set up an array that can contain up to 32 address pointer that can automatically be expanded in 32 additional pointer locations at the time when needed. Capacity and next available index values are part of this structure.
-.TP
-.BR Returns: none
+.br
+
+\fBArguments: \fR \fInone\fR 
+.br
+\fBReturn Value: \fR \fIint\fR [0 (success) or 1 (failure)]
 .TP
 .BR hc_cleanup()
 You should call this functions at the end of your process. It will free all addresses in the address array. The memory allocated for the arena structure will be freed as well.
+.br
+
+\fBArguments: \fR \fInone\fR 
+.br
+\fBReturn Value: \fR \fIint\fR [0 (success) or 1 (failure)]
 .TP
-.BR Returns: none
-.TP
-.BR hc_free(void *addr_pntr)
+.BR hc_free(\fRaddr_pntr)
 Will free the memory allocated at the specified address. The address will be removed from the array.
-.TP
-.BR Returns: none
+.br
+
+\fBArguments: \fR \fIvoid*\fR [address to be released]
+.br
+\fBReturn Value: \fR \fIint\fR [0 (success) or 1 (failure)]
 .TP
 .BR hc_display()
 Displays the content of the arena structure, including the address array.
+.br
+Intended for light debugging.
+.br
+
+\fBArguments: \fR \fInone\fR 
+.br
+\fBReturn Value: \fR \fIint\fR [0 (success) or 1 (failure)]
 .TP
-.BR Returns: none
-.TP
-.BR hc_malloc(size_t size)
+.BR hc_malloc(\fRsize)
 Allocates given size memory and add it to the array and updates the next index value.
+.br
+
+\fBArguments: \fR \fIsize_t\fR [size in bytes]
+.br
+\fBReturn Value: \fR \fIvoid*\fR [address pointer]
 .TP
-.BR Returns: address pointer
-.TP
-.BR hc_calloc(size_t num_elem, size_t elem_size)
+.BR hc_calloc(\fRnum_elem, elem_size)
 Allocates requested memory block. Size is calculated by multiplying the number of element requested by the size of the element. Address will be added to the arena array and updates the next index value.
+.br
+
+\fBArguments: \fR \fIsize_t\fR , \fIsize_t\fR [number of elements, size of element] 
+.br
+\fBReturn Value: \fR \fIvoid*\fR [address pointer]
 .TP
-.BR Returns: address pointer
-.TP
-.BR hc_realloc(void *old_pntr, size_t size)
+.BR hc_realloc(\fRold_pntr, size)
 Reallocates the existing memory alloction pointed to by the old_pntr argument to a new area with the specified size. The original address in the array will be updated with the new one.
+.br
+
+\fBArguments: \fR \fIvoid*\fR , \fIsize_t\fR [address pointer, new size allocation] 
+.br
+\fBReturn Value: \fR \fIvoid*\fR [address pointer]
 .TP
-.BR Returns: address pointer
-.TP
-.BR hc_strdup(void *addr_pntr)
+.BR hc_strdup(\fRaddr_pntr)
 Copies the content of a string pointed to by the addr_pntr. Updates the address array and next_index value.
-.TP
-.BR Returns: char address pointer
+.br
+
+\fBArguments: \fR \fIvoid*\fR [address pointer to string to be duplicated]
+.br
+\fBReturn Value: \fR \fIchar*\fR [address pointer]
 .SH INTERNAL FUCTIONS
 .TP
 .BR _hc_address_array_capacity_increase()
 This function will be invoked when the current capacity of the address array is reached. The increments is by 32 address locations each time. 
+.br
+
+\fBArguments: \fR \fInone\fR 
+.br
+\fBReturn Value: \fR \fInone\fR
 .TP
-.BR Returns: none
-.TP
-.BR _hc_address_add(addr_pntr)
+.BR _hc_address_add(\fRaddr_pntr)
 Adds an address pointer to the address array. Will evoke _hc_address_array_capacity_increase() when the current capacity is reached
+.br
+
+\fBArguments: \fR \fIvoid*\fR [address pointer to be added]
+.br
+\fBReturn Value: \fR \fInone\fR
 .TP
-.BR Returns: none
-.TP
-.BR _hc_address_locate(void *addr_pntr)
+.BR _hc_address_locate(\fRaddr_pntr)
 Returns the index of the given address pointer.
+.br
+
+\fBArguments: \fR \fIvoid*\fR [address pointer to locate]
+.br
+\fBReturn Value: \fR \fIint\fR [index to address array]
 .TP
-.BR Returns: int
-.TP
-.BR _hc_address_replace(void *old_pntr, void *new_pntr)
+.BR _hc_address_replace(\fRold_pntr, new_pntr)
 Locates the given old pointer in the address array and replaces it with the new given pointer.
-.TP
-.BR Returns: none
-.SH EXAMPLES
+.br
+
+\fBArguments: \fR \fIvoid*\fR , \fIvoid*\fR [old address pointer, new address pointer]
+.br
+\fBReturn Value: \fR \fInone\fR
+.SH EXAMPLE
+.EX
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <hc_malloc/hc_malloc.h>
+
+/* handle errors ... */
+void hc_malloc_error(char *location) {
+	fprintf(stderr, "[%s] - hc_malloc failed: %s\\n", location, message);
+}
+
+int main() {
+	/* initializes arena structure */
+	if( hc_init() ) { hc_malloc_error(__func__, "hc_init"); return 1 }
+
+	/* string pointer on the stack -> .rodata (text-) segment */
+	char *a_string_1 = "Now the time hase come for all good men to come to the aid of their country.";
+
+	/* Allocates a 80 character sized area on the heap */
+	char *a_string_2 = hc_malloc(80 * sizeof(char));
+	if( a_string_2 == NULL ) { hc_malloc_error(__func__, "hc_malloc"); return 1 }
+
+	/* Moves some content to the heap allocated string */
+	strcpy(a_string_2, "Look, a string on the heap!");
+
+	/* Duplicates the stack pointed string to the heap */
+	char *a_string_3 = hc_strdup(a_string_1);
+	if( a_string_3 == NULL)  { hc_malloc_error(__func__, "hc_strdup"); return 1 }
+
+	/* Displays the address pointers and other arena values */
+	hc_display();
+
+	/* frees all the allocated memory and removes the arena structure */
+	if ( hc_cleanup() ) { hc_malloc_error(__func__, "hc_cleanup"); return 1 }
+
+	return 0;
+}
+.EE
 .TP
 .SH FILES
 .TP
 .I /usr/local/share/hc_malloc/doc/README.md
+.br
 Documentation to this utility, also available in html and pdf form.
+.TP
+.I https://github.com/yveshoebeke/hc_malloc
+.br
+The README.md contains installation instructions.
 .SH LICENSE
 .TP
 .I /usr/local/share//hc_malloc/doc/LICENSE
 MIT license.
 .SH AUTHOR
-yves.hoebeke@gmail.com
+yves hoebeke  (bytesupply@proton.me)
 
