@@ -27,7 +27,7 @@ You should call this functions at the end of your process. It will free all addr
 
 \fBArguments: \fR \fInone\fR 
 .br
-\fBReturn Value: \fR \fIint\fR [0 (success) or 1 (failure)]
+\fBReturn Value: \fR \fInone\fR
 .TP
 .BR hc_free(\fRaddr_pntr)
 Will free the memory allocated at the specified address. The address will be removed from the array.
@@ -35,7 +35,7 @@ Will free the memory allocated at the specified address. The address will be rem
 
 \fBArguments: \fR \fIvoid*\fR [address to be released]
 .br
-\fBReturn Value: \fR \fIint\fR [0 (success) or 1 (failure)]
+\fBReturn Value: \fR \fInone\fR
 .TP
 .BR hc_display()
 Displays the content of the arena structure, including the address array.
@@ -45,7 +45,7 @@ Intended for light debugging.
 
 \fBArguments: \fR \fInone\fR 
 .br
-\fBReturn Value: \fR \fIint\fR [0 (success) or 1 (failure)]
+\fBReturn Value: \fR \fInone\fR
 .TP
 .BR hc_malloc(\fRsize)
 Allocates given size memory and add it to the array and updates the next index value.
@@ -127,7 +127,7 @@ void hc_malloc_error(char *location) {
 
 int main() {
 	/* initializes arena structure */
-	if( hc_init() ) { hc_malloc_error(__func__, "hc_init"); return 1 }
+	hc_init();
 
 	/* string pointer on the stack -> .rodata (text-) segment */
 	char *a_string_1 = "Now the time hase come for all good men to come to the aid of their country.";
@@ -147,7 +147,7 @@ int main() {
 	hc_display();
 
 	/* frees all the allocated memory and removes the arena structure */
-	if ( hc_cleanup() ) { hc_malloc_error(__func__, "hc_cleanup"); return 1 }
+	hc_cleanup();
 
 	return 0;
 }
