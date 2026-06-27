@@ -1,5 +1,5 @@
 <!-- Creator     : groff version 1.24.1 -->
-<!-- CreationDate: Sat Jun 27 13:09:49 2026 -->
+<!-- CreationDate: Sat Jun 27 14:04:04 2026 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -98,8 +98,7 @@ structure will be freed as well.</p>
 
 <p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
 <i>none</i> <b><br>
-Return Value:</b> <i>int</i> [0 (success) or 1
-(failure)]</p>
+Return Value:</b> <i>none</i></p>
 
 <p style="margin-left:6%;"><b>hc_free(</b>addr_pntr)</p>
 
@@ -110,8 +109,7 @@ the array.</p>
 
 <p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
 <i>void*</i> [address to be released] <b><br>
-Return Value:</b> <i>int</i> [0 (success) or 1
-(failure)]</p>
+Return Value:</b> <i>none</i></p>
 
 <p style="margin-left:6%;"><b>hc_display()</b></p>
 
@@ -122,8 +120,7 @@ Intended for light debugging.</p>
 
 <p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
 <i>none</i> <b><br>
-Return Value:</b> <i>int</i> [0 (success) or 1
-(failure)]</p>
+Return Value:</b> <i>none</i></p>
 
 <p style="margin-left:6%;"><b>hc_malloc(</b>size)</p>
 
@@ -276,8 +273,7 @@ void hc_malloc_error(char *location) {</p>
 <td width="94%">
 
 
-<p>if( hc_init() ) { hc_malloc_error(__func__,
-&quot;hc_init&quot;); return 1 }</p></td></tr>
+<p>hc_init();</p></td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
 <td width="94%">
@@ -371,8 +367,7 @@ structure */</p></td></tr>
 <td width="94%">
 
 
-<p>if ( hc_cleanup() ) { hc_malloc_error(__func__,
-&quot;hc_cleanup&quot;); return 1 }</p></td></tr>
+<p>hc_cleanup();</p></td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
 <td width="94%">
