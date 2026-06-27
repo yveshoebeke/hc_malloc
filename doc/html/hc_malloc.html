@@ -1,5 +1,5 @@
 <!-- Creator     : groff version 1.24.1 -->
-<!-- CreationDate: Sat Jun 27 01:38:52 2026 -->
+<!-- CreationDate: Sat Jun 27 13:09:49 2026 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -25,7 +25,7 @@
 <a href="#DESCRIPTION">DESCRIPTION</a><br>
 <a href="#PUBLIC FUCTIONS">PUBLIC FUCTIONS</a><br>
 <a href="#INTERNAL FUCTIONS">INTERNAL FUCTIONS</a><br>
-<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#EXAMPLE">EXAMPLE</a><br>
 <a href="#FILES">FILES</a><br>
 <a href="#LICENSE">LICENSE</a><br>
 <a href="#AUTHOR">AUTHOR</a><br>
@@ -48,7 +48,8 @@ up and manages memory allocation arena.</p>
 
 
 <p style="margin-left:6%; margin-top: 1em"><b>hc_malloc</b>
-[<i>options</i>] [<i>file</i>...]</p>
+[library...] [<i>gcc -o my_program -lhc_malloc
+my_program.c</i>]</p>
 
 <h2>DESCRIPTION
 <a name="DESCRIPTION"></a>
@@ -58,10 +59,13 @@ up and manages memory allocation arena.</p>
 
 <p style="margin-left:6%; margin-top: 1em"><b>hc_malloc</b>
 is a library written in C that sets up an information
-structure that keeps track of heap allocated memory
-allocations. The functions wrap around the standard memory
-allocation commands and keeps track of the addresses. It
-works seamlessly on Unix, Linux and macOS.</p>
+structure that keeps track of heap memory allocations. It is
+a wrapper around the standard memory allocation/manipulation
+functions and keeps track of the addresses.</p>
+
+<p style="margin-left:6%; margin-top: 1em">Installation
+scripts work seamlessly on Unix, Linux and macOS. <i>Not
+tested on MS Windows(tm)</i>.</p>
 
 <h2>PUBLIC FUCTIONS
 <a name="PUBLIC FUCTIONS"></a>
@@ -78,37 +82,61 @@ be expanded in 32 additional pointer locations at the time
 when needed. Capacity and next available index values are
 part of this structure.</p>
 
-<p style="margin-left:6%;"><b>Returns:</b>none <b><br>
-hc_cleanup()</b></p>
+
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>none</i> <b><br>
+Return Value:</b> <i>int</i> [0 (success) or 1
+(failure)]</p>
+
+<p style="margin-left:6%;"><b>hc_cleanup()</b></p>
 
 <p style="margin-left:15%;">You should call this functions
 at the end of your process. It will free all addresses in
 the address array. The memory allocated for the arena
 structure will be freed as well.</p>
 
-<p style="margin-left:6%;"><b>Returns:</b>none <b><br>
-hc_free(void</b>*addr_pntr)</p>
+
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>none</i> <b><br>
+Return Value:</b> <i>int</i> [0 (success) or 1
+(failure)]</p>
+
+<p style="margin-left:6%;"><b>hc_free(</b>addr_pntr)</p>
 
 <p style="margin-left:15%;">Will free the memory allocated
 at the specified address. The address will be removed from
 the array.</p>
 
-<p style="margin-left:6%;"><b>Returns:</b>none <b><br>
-hc_display()</b></p>
+
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>void*</i> [address to be released] <b><br>
+Return Value:</b> <i>int</i> [0 (success) or 1
+(failure)]</p>
+
+<p style="margin-left:6%;"><b>hc_display()</b></p>
 
 <p style="margin-left:15%;">Displays the content of the
-arena structure, including the address array.</p>
+arena structure, including the address array. <br>
+Intended for light debugging.</p>
 
-<p style="margin-left:6%;"><b>Returns:</b>none <b><br>
-hc_malloc(size_t</b>size)</p>
+
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>none</i> <b><br>
+Return Value:</b> <i>int</i> [0 (success) or 1
+(failure)]</p>
+
+<p style="margin-left:6%;"><b>hc_malloc(</b>size)</p>
 
 <p style="margin-left:15%;">Allocates given size memory and
 add it to the array and updates the next index value.</p>
 
 
-<p style="margin-left:6%;"><b>Returns:</b>address<b>pointer
-<br>
-hc_calloc(size_t</b>num_elem,<b>size_t</b>elem_size)</p>
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>size_t</i> [size in bytes] <b><br>
+Return Value:</b> <i>void*</i> [address pointer]</p>
+
+
+<p style="margin-left:6%;"><b>hc_calloc(</b>num_elem,elem_size)</p>
 
 <p style="margin-left:15%;">Allocates requested memory
 block. Size is calculated by multiplying the number of
@@ -117,9 +145,13 @@ be added to the arena array and updates the next index
 value.</p>
 
 
-<p style="margin-left:6%;"><b>Returns:</b>address<b>pointer
-<br>
-hc_realloc(void</b>*old_pntr,<b>size_t</b>size)</p>
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>size_t</i> , <i>size_t</i> [number of elements, size of
+element] <b><br>
+Return Value:</b> <i>void*</i> [address pointer]</p>
+
+
+<p style="margin-left:6%;"><b>hc_realloc(</b>old_pntr,size)</p>
 
 <p style="margin-left:15%;">Reallocates the existing memory
 alloction pointed to by the old_pntr argument to a new area
@@ -127,16 +159,22 @@ with the specified size. The original address in the array
 will be updated with the new one.</p>
 
 
-<p style="margin-left:6%;"><b>Returns:</b>address<b>pointer
-<br>
-hc_strdup(void</b>*addr_pntr)</p>
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>void*</i> , <i>size_t</i> [address pointer, new size
+allocation] <b><br>
+Return Value:</b> <i>void*</i> [address pointer]</p>
+
+<p style="margin-left:6%;"><b>hc_strdup(</b>addr_pntr)</p>
 
 <p style="margin-left:15%;">Copies the content of a string
 pointed to by the addr_pntr. Updates the address array and
 next_index value.</p>
 
 
-<p style="margin-left:6%;"><b>Returns:</b>char<b>address</b>pointer</p>
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>void*</i> [address pointer to string to be duplicated]
+<b><br>
+Return Value:</b> <i>char*</i> [address pointer]</p>
 
 <h2>INTERNAL FUCTIONS
 <a name="INTERNAL FUCTIONS"></a>
@@ -150,34 +188,200 @@ next_index value.</p>
 when the current capacity of the address array is reached.
 The increments is by 32 address locations each time.</p>
 
-<p style="margin-left:6%;"><b>Returns:</b>none <b><br>
-_hc_address_add(addr_pntr)</b></p>
+
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>none</i> <b><br>
+Return Value:</b> <i>none</i></p>
+
+
+<p style="margin-left:6%;"><b>_hc_address_add(</b>addr_pntr)</p>
 
 <p style="margin-left:15%;">Adds an address pointer to the
 address array. Will evoke
 _hc_address_array_capacity_increase() when the current
 capacity is reached</p>
 
-<p style="margin-left:6%;"><b>Returns:</b>none <b><br>
-_hc_address_locate(void</b>*addr_pntr)</p>
+
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>void*</i> [address pointer to be added] <b><br>
+Return Value:</b> <i>none</i></p>
+
+
+<p style="margin-left:6%;"><b>_hc_address_locate(</b>addr_pntr)</p>
 
 <p style="margin-left:15%;">Returns the index of the given
 address pointer.</p>
 
-<p style="margin-left:6%;"><b>Returns:</b>int <b><br>
 
-_hc_address_replace(void</b>*old_pntr,<b>void</b>*new_pntr)</p>
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>void*</i> [address pointer to locate] <b><br>
+Return Value:</b> <i>int</i> [index to address array]</p>
+
+
+<p style="margin-left:6%;"><b>_hc_address_replace(</b>old_pntr,new_pntr)</p>
 
 <p style="margin-left:15%;">Locates the given old pointer
 in the address array and replaces it with the new given
 pointer.</p>
 
-<p style="margin-left:6%;"><b>Returns:</b>none</p>
 
-<h2>EXAMPLES
-<a name="EXAMPLES"></a>
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>void*</i> , <i>void*</i> [old address pointer, new
+address pointer] <b><br>
+Return Value:</b> <i>none</i></p>
+
+<h2>EXAMPLE
+<a name="EXAMPLE"></a>
 </h2>
 
+
+<p style="margin-left:6%; margin-top: 1em">#include
+&lt;stdio.h&gt; <br>
+#include &lt;stdlib.h&gt; <br>
+#include &lt;string.h&gt;</p>
+
+<p style="margin-left:6%; margin-top: 1em">#include
+&lt;hc_malloc/hc_malloc.h&gt;</p>
+
+<p style="margin-left:6%; margin-top: 1em">/* handle errors
+... */ <br>
+void hc_malloc_error(char *location) {</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="7%"></td>
+<td width="87%">
+
+
+<p>fprintf(stderr, &quot;[%s] - hc_malloc failed:
+%s\n&quot;, location, message);</p></td></tr>
+</table>
+
+<p style="margin-left:6%;">}</p>
+
+<p style="margin-left:6%; margin-top: 1em">int main() {</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>/* initializes arena structure */</p></td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>if( hc_init() ) { hc_malloc_error(__func__,
+&quot;hc_init&quot;); return 1 }</p></td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>/* string pointer on the stack -&gt; .rodata (text-)
+segment */</p></td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>char *a_string_1 = &quot;Now the time hase come for all
+good men to come to the aid of their country.&quot;;</p></td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>/* Allocates a 80 character sized area on the heap
+*/</p> </td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>char *a_string_2 = hc_malloc(80 * sizeof(char));</p></td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>if( a_string_2 == NULL ) { hc_malloc_error(__func__,
+&quot;hc_malloc&quot;); return 1 }</p></td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>/* Moves some content to the heap allocated string
+*/</p> </td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>strcpy(a_string_2, &quot;Look, a string on the
+heap!&quot;);</p> </td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>/* Duplicates the stack pointed string to the heap
+*/</p> </td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>char *a_string_3 = hc_strdup(a_string_1);</p></td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>if( a_string_3 == NULL) { hc_malloc_error(__func__,
+&quot;hc_strdup&quot;); return 1 }</p></td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>/* Displays the address pointers and other arena values
+*/</p> </td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>hc_display();</p></td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>/* frees all the allocated memory and removes the arena
+structure */</p></td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>if ( hc_cleanup() ) { hc_malloc_error(__func__,
+&quot;hc_cleanup&quot;); return 1 }</p></td></tr>
+<tr valign="top" align="left">
+<td width="6%"></td>
+<td width="94%">
+
+
+<p>return 0;</p></td></tr>
+</table>
+
+<p style="margin-left:6%;">}</p>
 
 <h2>FILES
 <a name="FILES"></a>
@@ -189,6 +393,12 @@ pointer.</p>
 
 <p style="margin-left:15%;">Documentation to this utility,
 also available in html and pdf form.</p>
+
+
+<p style="margin-left:6%;"><i>https://github.com/yveshoebeke/hc_malloc</i></p>
+
+<p style="margin-left:15%;">The README.md contains
+installation instructions.</p>
 
 <h2>LICENSE
 <a name="LICENSE"></a>
@@ -205,8 +415,8 @@ also available in html and pdf form.</p>
 </h2>
 
 
-
-<p style="margin-left:6%; margin-top: 1em">yves.hoebeke@gmail.com</p>
+<p style="margin-left:6%; margin-top: 1em">yves hoebeke
+(bytesupply@proton.me)</p>
 <hr>
 </body>
 </html>
