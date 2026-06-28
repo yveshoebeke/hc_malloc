@@ -2,6 +2,8 @@
 #include <string.h>
 #include <hc_malloc/hc_malloc.h>
 
+#define LOG_ERROR(msg) fprintf(stderr, "[%s] - ERROR: %s\n", __func__, msg)
+
 void continue_after_enter() {
 	printf("\nPress [Enter] to continue... ");
 	getchar();
@@ -9,7 +11,7 @@ void continue_after_enter() {
 }
 
 int main() {
-	hc_init();
+	if ( hc_init() ) { return 1; }
 	printf("hc dump after init (0):\n");
 	hc_display();
 
@@ -17,10 +19,12 @@ int main() {
 
 	char *a_string_1 = "Now the time hase come.";
 	char *a_string_3 = hc_malloc(80);
+	if ( a_string_3 == NULL ) { LOG_ERROR("a_string_3 hc_malloc failed"); }
 
 	strcpy(a_string_3, "Yves Hoebeke");
 
 	char *a_string_2 = hc_strdup(a_string_1);
+	if ( a_string_2 == NULL ) { LOG_ERROR("a_string_2 hc_strdup failed"); }
 
 	printf("a_string_1: %s\t[%p](stack)\na_string_2: %s\t[%p](strdup of a_string_1)\na_string_3: %s\t[%p](regular malloc)\n", a_string_1, a_string_1, a_string_2, a_string_2, a_string_3, a_string_3);
 
@@ -30,6 +34,8 @@ int main() {
 	continue_after_enter();
 
 	char *a_string_4 = hc_realloc(a_string_3, 128);
+	if ( a_string_4 == NULL ) { LOG_ERROR("a_string_4 hc_realloc failed"); }
+
 	strcpy(a_string_4, "Yves Hoebeke - Vijverslei 24B - 2950 Kapellen - Belgium");
 	printf("a_string_4: %s\t[%p] (realloc of a_string_3)\n", a_string_4, a_string_4);
 	
@@ -49,6 +55,8 @@ int main() {
 	int *numbers[40];
 	for(int i = 0; i < 40; i++) {
 		numbers[i] = hc_malloc(sizeof(int));
+		if ( numbers[i] == NULL ) { LOG_ERROR("array number allocation failed"); }
+
 		*numbers[i] = i * 3;
 	}
 

@@ -3,7 +3,7 @@
 hc_malloc \- Sets up and manages memory allocation arena.
 .SH SYNOPSIS
 .B hc_malloc
-[library...] [\fIgcc -o my_program -lhc_malloc my_program.c\fR] 
+[library...] [gcc -o my_program \fB-lhc_malloc\fR my_program.c] 
 .SH DESCRIPTION
 .B hc_malloc
 is a library written in C that sets up an information structure that keeps track of heap memory allocations. It is a wrapper around the standard memory allocation/manipulation functions and keeps track of the addresses. 
@@ -19,7 +19,7 @@ It will set up an array that can contain up to 32 address pointer that can autom
 
 \fBArguments: \fR \fInone\fR 
 .br
-\fBReturn Value: \fR \fInone\fR
+\fBReturn Value: \fR \fIint\fR [ 0 (succes) or 1 (fail)]
 .TP
 .BR hc_cleanup()
 You should call this functions at the end of your process. It will free all addresses in the address array. The memory allocated for the arena structure will be freed as well.
@@ -120,28 +120,25 @@ Locates the given old pointer in the address array and replaces it with the new 
 
 #include <hc_malloc/hc_malloc.h>
 
-/* handle errors ... */
-void hc_malloc_error(char *location) {
-	fprintf(stderr, "[%s] - hc_malloc failed: %s\\n", location, message);
-}
+#define LOG_ERROR(msg) fprintf(stderr, "[ERROR] in %s: %s\\n", __func__, msg)
 
 int main() {
 	/* initializes arena structure */
-	hc_init();
+	if ( hc_init() ) { return 1; }
 
 	/* string pointer on the stack -> .rodata (text-) segment */
 	char *a_string_1 = "Now the time hase come for all good men to come to the aid of their country.";
 
 	/* Allocates a 80 character sized area on the heap */
 	char *a_string_2 = hc_malloc(80 * sizeof(char));
-	if( a_string_2 == NULL ) { hc_malloc_error(__func__, "hc_malloc"); return 1 }
+	if( a_string_2 == NULL ) { LOG_ERROR("hc_malloc"); return 1; }
 
 	/* Moves some content to the heap allocated string */
 	strcpy(a_string_2, "Look, a string on the heap!");
 
 	/* Duplicates the stack pointed string to the heap */
 	char *a_string_3 = hc_strdup(a_string_1);
-	if( a_string_3 == NULL)  { hc_malloc_error(__func__, "hc_strdup"); return 1 }
+	if( a_string_3 == NULL)  { LOG_ERROR("hc_strdup"); return 1; }
 
 	/* Displays the address pointers and other arena values */
 	hc_display();

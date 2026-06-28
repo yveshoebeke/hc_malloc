@@ -103,22 +103,24 @@ void hc_display() {
 
 /* (Public) Initializes the Heap structure and sets array capacity
    to the HEAP_ADDR_ARRAY_SIZE constant. */
-void hc_init() {
+int hc_init() {
 	hc = malloc(sizeof(Heap_Arena));
 	if (hc == NULL) {
-		fprintf(stderr, "fatal error: heap allocation failed");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "[%s] - fatal error: heap allocation failed", __func__);
+		return 1;
 	}
 
 	hc->addr = malloc(HEAP_ADDR_ARRAY_SIZE * sizeof(void*));
 	if (hc->addr == NULL) {
-		fprintf(stderr, "fatal error: heap address array allocation failed");
+		fprintf(stderr, "[%s] - fatal error: heap address array allocation failed", __func__);
 		free(hc);
-		exit(EXIT_FAILURE);
+		return 1;
 	}
 
 	hc->next_idx = 0;
 	hc->capacity = HEAP_ADDR_ARRAY_SIZE;
+
+	return 0;
 }
 
 /* (Public) Frees all pointers stored in the Heap array and

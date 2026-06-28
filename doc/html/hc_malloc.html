@@ -1,5 +1,5 @@
 <!-- Creator     : groff version 1.24.1 -->
-<!-- CreationDate: Sat Jun 27 14:16:31 2026 -->
+<!-- CreationDate: Sun Jun 28 13:54:12 2026 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -48,8 +48,8 @@ up and manages memory allocation arena.</p>
 
 
 <p style="margin-left:6%; margin-top: 1em"><b>hc_malloc</b>
-[library...] [<i>gcc -o my_program -lhc_malloc
-my_program.c</i>]</p>
+[library...] [gcc -o my_program <b>-lhc_malloc</b>
+my_program.c]</p>
 
 <h2>DESCRIPTION
 <a name="DESCRIPTION"></a>
@@ -85,7 +85,7 @@ part of this structure.</p>
 
 <p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
 <i>none</i> <b><br>
-Return Value:</b> <i>none</i></p>
+Return Value:</b> <i>int</i> [ 0 (succes) or 1 (fail)]</p>
 
 <p style="margin-left:6%;"><b>hc_cleanup()</b></p>
 
@@ -239,9 +239,11 @@ Return Value:</b> <i>none</i></p>
 <p style="margin-left:6%; margin-top: 1em">#include
 &lt;hc_malloc/hc_malloc.h&gt;</p>
 
-<p style="margin-left:6%; margin-top: 1em">/* handle errors
-... */ <br>
-void hc_malloc_error(char *location) {</p>
+<p style="margin-left:6%; margin-top: 1em">#define
+LOG_ERROR(msg) fprintf(stderr, &quot;[ERROR] in %s:
+%s\n&quot;, __func__, msg)</p>
+
+<p style="margin-left:6%; margin-top: 1em">int main() {</p>
 
 <table width="100%" border="0" rules="none" frame="void"
        cellspacing="0" cellpadding="0">
@@ -251,125 +253,126 @@ void hc_malloc_error(char *location) {</p>
 <td width="87%">
 
 
-<p>fprintf(stderr, &quot;[%s] - hc_malloc failed:
-%s\n&quot;, location, message);</p></td></tr>
-</table>
-
-<p style="margin-left:6%;">}</p>
-
-<p style="margin-left:6%; margin-top: 1em">int main() {</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="6%"></td>
-<td width="94%">
-
-
 <p>/* initializes arena structure */</p></td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
-<p>hc_init();</p></td></tr>
+<p>if ( hc_init() ) { return 1; }</p></td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
 <p>/* string pointer on the stack -&gt; .rodata (text-)
 segment */</p></td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
 <p>char *a_string_1 = &quot;Now the time hase come for all
 good men to come to the aid of their country.&quot;;</p></td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
 <p>/* Allocates a 80 character sized area on the heap
 */</p> </td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
 <p>char *a_string_2 = hc_malloc(80 * sizeof(char));</p></td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
-<p>if( a_string_2 == NULL ) { hc_malloc_error(__func__,
-&quot;hc_malloc&quot;); return 1 }</p></td></tr>
+<p>if( a_string_2 == NULL ) {
+LOG_ERROR(&quot;hc_malloc&quot;); return 1; }</p></td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
 <p>/* Moves some content to the heap allocated string
 */</p> </td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
 <p>strcpy(a_string_2, &quot;Look, a string on the
 heap!&quot;);</p> </td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
 <p>/* Duplicates the stack pointed string to the heap
 */</p> </td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
 <p>char *a_string_3 = hc_strdup(a_string_1);</p></td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
-<p>if( a_string_3 == NULL) { hc_malloc_error(__func__,
-&quot;hc_strdup&quot;); return 1 }</p></td></tr>
+<p>if( a_string_3 == NULL) {
+LOG_ERROR(&quot;hc_strdup&quot;); return 1; }</p></td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
 <p>/* Displays the address pointers and other arena values
 */</p> </td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
 <p>hc_display();</p></td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
 <p>/* frees all the allocated memory and removes the arena
 structure */</p></td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
 <p>hc_cleanup();</p></td></tr>
 <tr valign="top" align="left">
 <td width="6%"></td>
-<td width="94%">
+<td width="7%"></td>
+<td width="87%">
 
 
 <p>return 0;</p></td></tr>

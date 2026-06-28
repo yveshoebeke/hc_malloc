@@ -28,57 +28,6 @@ extern "C"
 {
 #endif
 
-#if !defined(__WINDOWS__) && (defined(WIN32) || defined(WIN64) || defined(_MSC_VER) || defined(_WIN32))
-#define __WINDOWS__
-#endif
-
-#ifdef __WINDOWS__
-
-// TODO adjust/remove with understanding:
-/* When compiling for windows, we specify a specific calling convention to avoid issues where we are being called from a project with a different default calling convention.  For windows you have 3 define options:
-
-HC_MALLOC_HIDE_SYMBOLS - Define this in the case where you don't want to ever dllexport symbols
-HC_MALLOC_EXPORT_SYMBOLS - Define this on library build when you want to dllexport symbols (default)
-HC_MALLOC_IMPORT_SYMBOLS - Define this if you want to dllimport symbol
-
-For *nix builds that support visibility attribute, you can define similar behavior by
-
-setting default visibility to hidden by adding
--fvisibility=hidden (for gcc)
-or
--xldscope=hidden (for sun cc)
-to CFLAGS
-
-then using the HC_MALLOC_API_VISIBILITY flag to "export" the same symbols the way HC_MALLOC_EXPORT_SYMBOLS does
-
-*/
-
-#define HC_MALLOC_CDECL __cdecl
-#define HC_MALLOC_STDCALL __stdcall
-
-/* export symbols by default, this is necessary for copy pasting the C and header file */
-#if !defined(HC_MALLOC_HIDE_SYMBOLS) && !defined(HC_MALLOC_IMPORT_SYMBOLS) && !defined(HC_MALLOC_EXPORT_SYMBOLS)
-#define HC_MALLOC_EXPORT_SYMBOLS
-#endif
-
-#if defined(HC_MALLOC_HIDE_SYMBOLS)
-#define HC_MALLOC_PUBLIC(type)   type HC_MALLOC_STDCALL
-#elif defined(HC_MALLOC_EXPORT_SYMBOLS)
-#define HC_MALLOC_PUBLIC(type)   __declspec(dllexport) type HC_MALLOC_STDCALL
-#elif defined(HC_MALLOC_IMPORT_SYMBOLS)
-#define HC_MALLOC_PUBLIC(type)   __declspec(dllimport) type HC_MALLOC_STDCALL
-#endif
-#else /* !__WINDOWS__ */
-#define HC_MALLOC_CDECL
-#define HC_MALLOC_STDCALL
-
-#if (defined(__GNUC__) || defined(__SUNPRO_CC) || defined (__SUNPRO_C)) && defined(HC_MALLOC_API_VISIBILITY)
-#define HC_MALLOC_PUBLIC(type)   __attribute__((visibility("default"))) type
-#else
-#define HC_MALLOC_PUBLIC(type) type
-#endif
-#endif
-
 /* project version */
 #define HC_MALLOC_VERSION_MAJOR 1
 #define HC_MALLOC_VERSION_MINOR 0
@@ -99,11 +48,11 @@ typedef struct {
 	void **addr;
 } Heap_Arena;
 
-/* Available Public Functions: */
+/* Public Functions: */
 
 /* Initializes the Heap structure and sets array capacity
    to the HEAP_ADDR_ARRAY_SIZE constant. */
-void hc_init();
+int hc_init();
 /* Frees all pointers stored in the Heap array and
    the Heap structure itself. */
 void hc_cleanup();
