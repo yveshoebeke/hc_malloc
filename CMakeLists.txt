@@ -25,7 +25,7 @@ enable_testing()
 add_subdirectory(tests)
 
 # Install the mylib.a binary to /usr/local/lib
-install(TARGETS hc_malloc DESTINATION lib)
+#install(TARGETS hc_malloc DESTINATION lib)
 
 # Install the public header directory to /usr/local/include/mylib/
 install(DIRECTORY include/hc_malloc DESTINATION include)
@@ -44,5 +44,6 @@ install(FILES doc/pdf/hc_malloc.pdf DESTINATION ${PDF_DOC_DEST})
 # Install auxiliaries - license.
 install(FILES LICENSE DESTINATION ${LICENSE_DEST})
 # Install auxiliaries - man page.
-install(FILES doc/man/hc_malloc.3 DESTINATION ${MAN_DEST})
-
+##install(FILES doc/man/hc_malloc.3 DESTINATION ${MAN_DEST})
+##install(FILES doc/man/hc_realloc.3 DESTINATION ${MAN_DEST})
+install(DIRECTORY doc/man/ DESTINATION ${MAN_DEST})

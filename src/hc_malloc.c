@@ -24,10 +24,6 @@
 	_hc_address_locate			- locates address in array and returns the index.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include <hc_malloc/hc_malloc.h>
 
 Heap_Arena *hc = NULL;
@@ -104,6 +100,8 @@ void hc_display() {
 /* (Public) Initializes the Heap structure and sets array capacity
    to the HEAP_ADDR_ARRAY_SIZE constant. */
 int hc_init() {
+	errno = 0;
+
 	hc = malloc(sizeof(Heap_Arena));
 	if (hc == NULL) {
 		fprintf(stderr, "[%s] - fatal error: heap allocation failed", __func__);
@@ -119,6 +117,17 @@ int hc_init() {
 
 	hc->next_idx = 0;
 	hc->capacity = HEAP_ADDR_ARRAY_SIZE;
+	hc->pagesize = sysconf(_SC_PAGESIZE);
+	if ( hc->pagesize == -1 ) {
+		if ( errno == 0 ) {
+			hc->pagesize = DEFAULT_MEMORY_PAGESIZE;
+		} else {
+			perror("sysconf error when requesting pagesize");
+			fprintf(stderr, "[%s] - pagesize request error: [%d]: %s", __func__, errno, strerror(errno));
+			free(hc);
+			return 1;
+		}
+	}
 
 	return 0;
 }
@@ -143,25 +152,81 @@ void hc_free(void *ptr) {
    the address pointer into the Heap arrau and
    updates the next_idx value. */
 void *hc_malloc(size_t size) {
-	void *pntr;
-	pntr = malloc(size);
-	if (pntr == NULL) return NULL;
+	void *ptr;
+	ptr = malloc(size);
+	if (ptr == NULL) return NULL;
 
-	_hc_address_add(pntr);
-	return pntr;
+	_hc_address_add(ptr);
+	return ptr;
 } 
 
 /* (Public) Allocates requested memory block, 
    initializes its values and saves the address pointer
    into the Heap array and updates the next_idx value. */
 void *hc_calloc(size_t number_of_elements, size_t size_of_element) {
-	void *pntr;
-	pntr = calloc(number_of_elements, size_of_element);
-	if (pntr == NULL) return NULL;
+	void *ptr;
+	ptr = calloc(number_of_elements, size_of_element);
+	if (ptr == NULL) return NULL;
 
-	_hc_address_add(pntr);
-	return pntr;
+	_hc_address_add(ptr);
+	return ptr;
 } 
+
+/* 
+Recommendation (memory allignment functions):
+
+Use hc_posix_memalign() if you are writing standard software for Linux, macOS, or UNIX.
+
+Use hc_aligned_alloc() only if your primary requirement is cross-platform C11 compliance outside of UNIX environments, and you don't mind the forced size rounding. 
+
+*/
+
+/* (Public) Every modern Linux, macOS, and BSD system fully supports posix_memalign(). */
+int hc_posix_memalign(void *ptr, size_t size) {
+	ptr = NULL;
+	int rc = posix_memalign(ptr, hc->pagesize, size);
+	if ( rc != 0 ) {
+		fprintf(stderr, "[%s] - Memory allocation on aligned boundry failed", __func__);
+		return 1;
+	}
+
+	_hc_address_add(ptr);
+	return 0;
+}
+
+/* (Public) Cross platform C11 compliant outside UNIX environments. */
+void *hc_aligned_alloc(size_t size) {
+	void *ptr = aligned_alloc(hc->pagesize * 2, size);
+	if ( ptr == NULL ) {
+		return NULL;
+	}
+
+	_hc_address_add(ptr);
+	return ptr;
+}
+
+/* (Public)  Drop-in replacement for: void *ptr = valloc(size); */
+void* hc_valloc(size_t size) {
+	void *ptr = NULL;
+
+	/* hc_posix_memalign returns 0 on success, or an error code
+	   address saved by hc_posix_memalign function */
+	if (hc_posix_memalign(&ptr, size) != 0) {
+	    return NULL; // Mimic valloc return behavior on failure
+	}
+	
+	return ptr;
+}
+
+/* (Public) Drop-in replacement for: void *ptr = valloc(size);
+   C11 compliant, forces size allignment. Also consider hc_aligned_alloc. */
+void* hc_C11_valloc(size_t size) {
+	// Size MUST be a multiple of alignment for aligned_alloc
+	size_t remainder = size % hc->pagesize;
+	size_t aligned_size = (remainder == 0) ? size : (size + (hc->pagesize - remainder));
+	// address saved by hc_aligned_alloc()
+	return hc_aligned_alloc(aligned_size);
+}
 
 /* (Public) Reallocates previously defined memory to a 
    a newly defined sized memory area and updates
@@ -181,18 +246,35 @@ void *hc_realloc(void *orig_ptr, size_t new_size) {
 	return orig_ptr;
 }
 
+/* (Public) Because reallocf() automatically frees the old memory on failure.
+   It eliminates the memory leak vulnerability of standard realloc(). 
+   This means you can technically use the concise syntax that is forbidden with regular realloc.
+   Originally introduced by FreeBSD and widely used in macOS/Darwin systems. */
+void *hc_reallocf(void *orig_ptr, size_t new_size) {
+	void *temp = reallocf(orig_ptr, new_size);
+	if (temp == NULL) {
+		_hc_address_remove(orig_ptr);
+		return NULL;
+	}
+
+	_hc_address_replace(orig_ptr, temp);
+	orig_ptr = temp;
+
+	return orig_ptr;
+}
+
 /* (Public) Copies the content of given content to 
    a Heap location, adds the address to the array
    and updates the next_idx value. */
 char *hc_strdup(char *str) {
 	size_t l = strlen(str) + 1;
-	char *pntr = hc_malloc( l );
-	if ( pntr == NULL ) {
+	char *ptr = hc_malloc( l );
+	if ( ptr == NULL ) {
 		return NULL;
 	}
 
-	strncpy(pntr, str, l);
+	strncpy(ptr, str, l);
 
-	return pntr;
+	return ptr;
 }
 

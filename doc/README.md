@@ -61,7 +61,12 @@ The hc prefix alludes to the internally implemented Heap Control functionality.
 * ```hc_display()``` - debug/visibility routine.
 * ```hc_malloc(size)```	- generate heap memory area, store and return pointer.
 * ```hc_calloc(num_elem, elem_size)``` - generate initialized heap memory area.
+* ```hc_posix_memalign(addr_pntr, size)``` - allocates at a base address that is exactly a multiple of the system's page size alignment.
+* ```hc_aligned_alloc(size)``` - allocates at a base address that is exactly a multiple of the system's page size alignment. Use this if your primary requirement is cross-platform C11 compliance outside UNIX environments.
+* ```hc_valloc(size)``` - drop-in replacement for depreciated ```valloc``` function. Implements ```hc_posix_memalign```.
+* ```hc_C11_valloc(size)``` - drop-in replacement for depreciated ```valloc``` function. Implements ```hc_aligned_alloc```.
 * ```hc_realloc(old_pntr, size)```- realloc with different size and retain orig. value.
+* ```hc_reallocf(old_pntr, size)```- drop-in replacement for reallocf.
 * ```hc_strdup(addr_pntr)``` - same as above, but moves content to heap pointed area.
 
 ---

@@ -1,5 +1,5 @@
 <!-- Creator     : groff version 1.24.1 -->
-<!-- CreationDate: Wed Jul  1 11:37:45 2026 -->
+<!-- CreationDate: Sat Jul  4 16:18:01 2026 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -21,14 +21,14 @@
 <h1 align="center">HC_MALLOC</h1>
 
 <a href="#NAME">NAME</a><br>
-<a href="#SYNOPSIS">SYNOPSIS</a><br>
 <a href="#DESCRIPTION">DESCRIPTION</a><br>
-<a href="#PUBLIC FUCTIONS">PUBLIC FUCTIONS</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
 <a href="#INTERNAL FUCTIONS">INTERNAL FUCTIONS</a><br>
 <a href="#EXAMPLE">EXAMPLE</a><br>
 <a href="#FILES">FILES</a><br>
 <a href="#LICENSE">LICENSE</a><br>
 <a href="#AUTHOR">AUTHOR</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
 
 <hr>
 
@@ -40,16 +40,6 @@
 
 <p style="margin-left:6%; margin-top: 1em">hc_malloc - Sets
 up and manages memory allocation arena.</p>
-
-<h2>SYNOPSIS
-<a name="SYNOPSIS"></a>
-</h2>
-
-
-
-<p style="margin-left:6%; margin-top: 1em"><b>hc_malloc</b>
-[library...] [gcc -o my_program <b>-lhc_malloc</b>
-my_program.c]</p>
 
 <h2>DESCRIPTION
 <a name="DESCRIPTION"></a>
@@ -67,8 +57,8 @@ functions and keeps track of the addresses.</p>
 scripts work seamlessly on Unix, Linux and macOS. <i>Not
 tested on MS Windows(tm)</i>.</p>
 
-<h2>PUBLIC FUCTIONS
-<a name="PUBLIC FUCTIONS"></a>
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
 </h2>
 
 
@@ -147,12 +137,91 @@ element] <b><br>
 Return Value:</b> <i>void*</i> [address pointer]</p>
 
 
+<p style="margin-left:6%;"><b>hc_posix_memalign(</b>memptr,size)</p>
+
+<p style="margin-left:15%;">Allocates size bytes of memory
+such that the allocation&rsquo;s base address is an exact
+multiple of the system&rsquo;s page size alignment, and
+returns the allocation in the value pointed to by given
+<i>memptr</i>. Use this when writing standard software for
+Linux, macOS or UNIX. Every modern Linux, macOS and BSD
+system fully supports this.</p>
+
+
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>void*</i> , <i>size_t</i> [address pointer, size
+allocation] <b><br>
+Return Value:</b> <i>int</i> [0 (success), !0 (failure)]</p>
+
+
+<p style="margin-left:6%;"><b>hc_aligned_alloc(</b>,size)</p>
+
+<p style="margin-left:15%;">Allocates size bytes of memory
+such that the allocation&rsquo;s base address is an exact
+multiple of the system&rsquo;s page size alignment, and
+returns the address pointer. Use this if your primary
+requirement is cross-platform C11 compliance outside of UNIX
+environments, and you don&rsquo;t mind the forced size
+rounding.</p>
+
+
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>size_t</i> [size allocation] <b><br>
+Return Value:</b> <i>void*</i> [address pointer]</p>
+
+<p style="margin-left:6%;"><b>hc_valloc(</b>,size)</p>
+
+<p style="margin-left:15%;">Drop-in replacement for:
+<i>void *ptr = valloc(size). This version implements
+hc_posix_memalign</i>. <br>
+Note: The valloc() function was formally deprecated and
+withdrawn in 2001 with the release of the POSIX.1-2001 and
+SUSv3 (Single UNIX Specification, Version 3) standards.</p>
+
+
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>size_t</i> [size allocation] <b><br>
+Return Value:</b> <i>void*</i> [address pointer]</p>
+
+<p style="margin-left:6%;"><b>hc_C11_valloc(</b>,size)</p>
+
+<p style="margin-left:15%;">Drop-in replacement for:
+<i>void *ptr = valloc(size). This version implements
+hc_aligned_alloc</i>. Forces the size to be a multiple of
+alignment for alligned allocation. <br>
+Note: The valloc() function was formally deprecated and
+withdrawn in 2001 with the release of the POSIX.1-2001 and
+SUSv3 (Single UNIX Specification, Version 3) standards.</p>
+
+
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>size_t</i> [size allocation] <b><br>
+Return Value:</b> <i>void*</i> [address pointer]</p>
+
+
 <p style="margin-left:6%;"><b>hc_realloc(</b>old_pntr,size)</p>
 
 <p style="margin-left:15%;">Reallocates the existing memory
 alloction pointed to by the old_pntr argument to a new area
 with the specified size. The original address in the array
 will be updated with the new one.</p>
+
+
+<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
+<i>void*</i> , <i>size_t</i> [address pointer, new size
+allocation] <b><br>
+Return Value:</b> <i>void*</i> [address pointer]</p>
+
+
+<p style="margin-left:6%;"><b>hc_reallocf(</b>old_pntr,size)</p>
+
+<p style="margin-left:15%;">Reallocates the existing memory
+alloction pointed to by the old_pntr argument to a new area
+with the specified size. The original address in the array
+will be updated with the new one. This is a drop-in
+replacement to the standard <b>reallocf</b> function. The
+<b>hc_realloc</b> function already took care of the release
+of the old pointer.</p>
 
 
 <p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
@@ -414,6 +483,16 @@ installation instructions.</p>
 
 <p style="margin-left:6%; margin-top: 1em">yves hoebeke
 (bytesupply@proton.me)</p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+
+<p style="margin-left:6%; margin-top: 1em"><b>malloc</b>(3),
+<b>leaks</b>(1), <b>free</b>(3), <b>posix_memalign</b>(3),
+<b>realloc</b>(3), <b>sysconf</b>(3)</p>
 <hr>
 </body>
 </html>
