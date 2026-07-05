@@ -77,7 +77,7 @@ Allocates size bytes of memory such that the allocation's base address is an exa
 \fBReturn Value: \fR \fIvoid*\fR [address pointer]
 .TP
 .BR hc_valloc(\fR, size)
-Drop-in replacement for: \fIvoid *ptr = valloc(size). This version implements \fIhc_posix_memalign\fR.
+Drop-in replacement for: void *ptr = valloc(size). This version implements \fIhc_posix_memalign\fR.
 .br
 Note: The valloc() function was formally deprecated and withdrawn in 2001 with the release of the POSIX.1-2001 and SUSv3 (Single UNIX Specification, Version 3) standards.
 .br
@@ -87,7 +87,7 @@ Note: The valloc() function was formally deprecated and withdrawn in 2001 with t
 \fBReturn Value: \fR \fIvoid*\fR [address pointer]
 .TP
 .BR hc_C11_valloc(\fR, size)
-Drop-in replacement for: \fIvoid *ptr = valloc(size). This version implements \fIhc_aligned_alloc\fR. Forces the size to be a multiple of alignment for alligned allocation.
+Drop-in replacement for: void *ptr = valloc(size). This version implements \fIhc_aligned_alloc\fR. Forces the size to be a multiple of alignment for alligned allocation.
 .br
 Note: The valloc() function was formally deprecated and withdrawn in 2001 with the release of the POSIX.1-2001 and SUSv3 (Single UNIX Specification, Version 3) standards.
 .br
