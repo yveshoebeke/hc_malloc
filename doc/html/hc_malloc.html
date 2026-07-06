@@ -1,5 +1,5 @@
 <!-- Creator     : groff version 1.24.1 -->
-<!-- CreationDate: Sun Jul  5 00:49:45 2026 -->
+<!-- CreationDate: Mon Jul  6 00:53:47 2026 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -137,7 +137,7 @@ element] <b><br>
 Return Value:</b> <i>void*</i> [address pointer]</p>
 
 
-<p style="margin-left:6%;"><b>hc_posix_memalign(</b>memptr,size)</p>
+<p style="margin-left:6%;"><b>hc_posix_memalign(</b>memptr,alignment,<b>size)</b></p>
 
 <p style="margin-left:15%;">Allocates size bytes of memory
 such that the allocation&rsquo;s base address is an exact
@@ -149,54 +149,9 @@ system fully supports this.</p>
 
 
 <p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
-<i>void*</i> , <i>size_t</i> [address pointer, size
-allocation] <b><br>
+<i>void*</i> , <i>size_t</i> , <i>size_t</i> [address
+pointer, alignment, size allocation] <b><br>
 Return Value:</b> <i>int</i> [0 (success), !0 (failure)]</p>
-
-
-<p style="margin-left:6%;"><b>hc_aligned_alloc(</b>,size)</p>
-
-<p style="margin-left:15%;">Allocates size bytes of memory
-such that the allocation&rsquo;s base address is an exact
-multiple of the system&rsquo;s page size alignment, and
-returns the address pointer. Use this if your primary
-requirement is cross-platform C11 compliance outside of UNIX
-environments, and you don&rsquo;t mind the forced size
-rounding.</p>
-
-
-<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
-<i>size_t</i> [size allocation] <b><br>
-Return Value:</b> <i>void*</i> [address pointer]</p>
-
-<p style="margin-left:6%;"><b>hc_valloc(</b>,size)</p>
-
-<p style="margin-left:15%;">Drop-in replacement for: void
-*ptr = valloc(size). This version implements
-<i>hc_posix_memalign</i>. <br>
-Note: The valloc() function was formally deprecated and
-withdrawn in 2001 with the release of the POSIX.1-2001 and
-SUSv3 (Single UNIX Specification, Version 3) standards.</p>
-
-
-<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
-<i>size_t</i> [size allocation] <b><br>
-Return Value:</b> <i>void*</i> [address pointer]</p>
-
-<p style="margin-left:6%;"><b>hc_C11_valloc(</b>,size)</p>
-
-<p style="margin-left:15%;">Drop-in replacement for: void
-*ptr = valloc(size). This version implements
-<i>hc_aligned_alloc</i>. Forces the size to be a multiple of
-alignment for alligned allocation. <br>
-Note: The valloc() function was formally deprecated and
-withdrawn in 2001 with the release of the POSIX.1-2001 and
-SUSv3 (Single UNIX Specification, Version 3) standards.</p>
-
-
-<p style="margin-left:15%; margin-top: 1em"><b>Arguments:</b>
-<i>size_t</i> [size allocation] <b><br>
-Return Value:</b> <i>void*</i> [address pointer]</p>
 
 
 <p style="margin-left:6%;"><b>hc_realloc(</b>old_pntr,size)</p>

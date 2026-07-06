@@ -1,2 +1,2 @@
-7b3a1c05373da6c1c3f278475324bdf1f818fb8f  src/hc_malloc.c
-a6e85fc29243be7511a4715a03d9dd0e8ff6a5a6  include/hc_malloc/hc_malloc.h
+0b20aa87152941b4f6ecfd3ee516953734f91ea1  src/hc_malloc.c
+881b13de443d95b7a6aad6b25d97cc43889f9edb  include/hc_malloc/hc_malloc.h

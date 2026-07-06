@@ -9,7 +9,8 @@
 	prior to program termination.
 
 	hc_init					- initialize array, capacity and next_idx in struct.
-	hc_cleanup				- free all addresses in the array.
+	hc_cleanup				- free all addresses in the array and remove all..
+	hc_clear				- free all addresses in the array, but leaves struct intact.
 	hc_free					- free and remove a pointer from array.
 	hc_display				- debug/visibility routine.
 	hc_malloc				- generate heap memory area, store and return pointer.
@@ -30,26 +31,49 @@ Heap_Arena *hc = NULL;
 
 /* (Private) Reallocate address space w/ higher capacity.
    (+ HEAP_ADDR_ARRAY_SIZE value chunk at a time) */
-static void _hc_address_array_capacity_increase() {
+int _hc_address_array_capacity_increase() {
+	// 1. calculate new size.
 	int new_capacity = hc->capacity + HEAP_ADDR_ARRAY_SIZE;
-	void *temp = realloc(hc->addr, new_capacity * sizeof(void*));
-	if (temp == NULL) {
+	size_t new_size_bytes = new_capacity * sizeof(void *);
+
+	// 2. create new addr array with new capacity.
+	void **new_addr = NULL;
+	int result = posix_memalign((void **)&new_addr, hc->alignment, new_size_bytes);
+	if ( result != 0 ) {
 		fprintf(stderr, "fatal error: addr array capacity increase failed");
-		free(hc->addr);
-		free(hc);
-		exit(EXIT_FAILURE);
+		return result;	
 	}
-	
-	hc->addr = temp;
+
+	// 3. copy tracked addr to new addr location.
+	size_t old_size_bytes = hc->capacity * sizeof(void *);
+	memcpy(new_addr, hc->addr, old_size_bytes);
+
+	// 4. initialize newly added addr elements.
+	for(int i = hc->capacity; i < new_capacity; i++) {
+		new_addr[i] = NULL;
+	}
+
+	// 5. free old array allocation.
+	free(hc->addr);
+
+	// 6. assign new addr to struct addr, update capacity value.
+	hc->addr = new_addr;
 	hc->capacity = new_capacity;
+
+	return 0;
 }
 
 /* (Private) Add address that was allocated on the heap array. */
-static void _hc_address_add(void *addr) {
+int _hc_address_add(void *addr) {
 	hc->addr[hc->next_idx++] = addr;
 	if (hc->next_idx == hc->capacity - 1) {
-		_hc_address_array_capacity_increase();
+		int rc = _hc_address_array_capacity_increase();
+		if( rc != 0 ) {
+			return 1;
+		}
 	}
+
+	return 0;
 }
 
 /* (Private) Find address in the array and return its index */
@@ -91,9 +115,14 @@ static void _hc_address_remove(void *addr_ptr) {
 /* (Public) (Utility) Display content of the Heap array. */
 void hc_display() {
 	printf("Heap Arena address -> [%p]\n", (void *)hc);
-	printf("capacity: %d - next_idx: %d - addresses:\n", hc->capacity, hc->next_idx);
+	printf("capacity: %d\n", hc->capacity);
+	printf("next_idx: %d\n", hc->next_idx);
+	printf("pagesize: %zu bytes\n", hc->pagesize);
+	printf("alignment: %zu bytes\n", hc->alignment);
+	printf("addresses:\n");
 	for (int i = 0; i < hc->capacity; i++) {
-		printf("%02d -> [%p]\n", i, hc->addr[i]);
+		printf("[%02d] -> (%p)  ", i, hc->addr[i]);
+		if ( (i + 1) % 4  == 0) { printf("\n"); }
 	}
 }
 
@@ -105,13 +134,6 @@ int hc_init() {
 	hc = malloc(sizeof(Heap_Arena));
 	if (hc == NULL) {
 		fprintf(stderr, "[%s] - fatal error: heap allocation failed", __func__);
-		return 1;
-	}
-
-	hc->addr = malloc(HEAP_ADDR_ARRAY_SIZE * sizeof(void*));
-	if (hc->addr == NULL) {
-		fprintf(stderr, "[%s] - fatal error: heap address array allocation failed", __func__);
-		free(hc);
 		return 1;
 	}
 
@@ -128,7 +150,16 @@ int hc_init() {
 			return 1;
 		}
 	}
+	hc->alignment = HEAP_ADDR_ARRAY_SIZE * 2;
 
+	hc->addr = NULL;
+	int result = posix_memalign((void **)&hc->addr, hc->alignment, hc->capacity * sizeof(void*));
+	if (result != 0) {
+		fprintf(stderr, "[%s] - fatal error: heap address array allocation failed", __func__);
+		free(hc->addr);
+		return 1;
+	}
+	
 	return 0;
 }
 
@@ -140,6 +171,30 @@ void hc_cleanup() {
 	}
 	free(hc->addr);
 	free(hc);
+}
+
+/* (Public) Frees all pointers stored in the Heap array, 
+   reinitializes the address array to initial capacity
+   and resets index/capacity values. */
+int hc_reset() {
+	for (int i = 0; i < hc->next_idx; i++) {
+		free(hc->addr[i]);
+	}
+
+	free(hc->addr);
+
+	hc->addr = NULL;
+	int result = posix_memalign((void **)&hc->addr, hc->alignment, hc->capacity * sizeof(void*));
+	if (result != 0) {
+		fprintf(stderr, "[%s] - fatal error: heap address array allocation failed", __func__);
+		free(hc->addr);
+		return 1;
+	}
+	
+	hc->next_idx = 0;
+	hc->capacity = HEAP_ADDR_ARRAY_SIZE;
+
+	return 0;
 }
 
 /* (Public) Frees address and removes it (NULLified) from the array */
@@ -156,7 +211,7 @@ void *hc_malloc(size_t size) {
 	ptr = malloc(size);
 	if (ptr == NULL) return NULL;
 
-	_hc_address_add(ptr);
+	if ( _hc_address_add(ptr) != 0 ) { return NULL; }
 	return ptr;
 } 
 
@@ -168,7 +223,7 @@ void *hc_calloc(size_t number_of_elements, size_t size_of_element) {
 	ptr = calloc(number_of_elements, size_of_element);
 	if (ptr == NULL) return NULL;
 
-	_hc_address_add(ptr);
+	if ( _hc_address_add(ptr) != 0 ) { return NULL; }
 	return ptr;
 } 
 
@@ -182,50 +237,16 @@ Use hc_aligned_alloc() only if your primary requirement is cross-platform C11 co
 */
 
 /* (Public) Every modern Linux, macOS, and BSD system fully supports posix_memalign(). */
-int hc_posix_memalign(void *ptr, size_t size) {
-	ptr = NULL;
-	int rc = posix_memalign(ptr, hc->pagesize, size);
+int hc_posix_memalign(void **ptr, size_t alignment,  size_t size) {
+	int rc = posix_memalign(ptr, hc->alignment, size);
 	if ( rc != 0 ) {
 		fprintf(stderr, "[%s] - Memory allocation on aligned boundry failed", __func__);
+		*ptr = NULL;
 		return 1;
 	}
 
-	_hc_address_add(ptr);
+	if ( _hc_address_add(*ptr) != 0 ) { return 1; }
 	return 0;
-}
-
-/* (Public) Cross platform C11 compliant outside UNIX environments. */
-void *hc_aligned_alloc(size_t size) {
-	void *ptr = aligned_alloc(hc->pagesize * 2, size);
-	if ( ptr == NULL ) {
-		return NULL;
-	}
-
-	_hc_address_add(ptr);
-	return ptr;
-}
-
-/* (Public)  Drop-in replacement for: void *ptr = valloc(size); */
-void* hc_valloc(size_t size) {
-	void *ptr = NULL;
-
-	/* hc_posix_memalign returns 0 on success, or an error code
-	   address saved by hc_posix_memalign function */
-	if (hc_posix_memalign(&ptr, size) != 0) {
-	    return NULL; // Mimic valloc return behavior on failure
-	}
-	
-	return ptr;
-}
-
-/* (Public) Drop-in replacement for: void *ptr = valloc(size);
-   C11 compliant, forces size allignment. Also consider hc_aligned_alloc. */
-void* hc_C11_valloc(size_t size) {
-	// Size MUST be a multiple of alignment for aligned_alloc
-	size_t remainder = size % hc->pagesize;
-	size_t aligned_size = (remainder == 0) ? size : (size + (hc->pagesize - remainder));
-	// address saved by hc_aligned_alloc()
-	return hc_aligned_alloc(aligned_size);
 }
 
 /* (Public) Reallocates previously defined memory to a 

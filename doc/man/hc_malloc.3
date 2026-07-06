@@ -60,41 +60,13 @@ Allocates requested memory block. Size is calculated by multiplying the number o
 .br
 \fBReturn Value: \fR \fIvoid*\fR [address pointer]
 .TP
-.BR hc_posix_memalign(\fRmemptr, size)
+.BR hc_posix_memalign(\fRmemptr, alignment,  size)
 Allocates size bytes of memory such that the allocation's base address is an exact multiple of the system's page size alignment, and returns the allocation in the value pointed to by given \fImemptr\fR. Use this when writing standard software for Linux, macOS or UNIX. Every modern Linux, macOS and BSD system fully supports this.
 .br
 
-\fBArguments: \fR \fIvoid*\fR , \fIsize_t\fR [address pointer, size allocation] 
+\fBArguments: \fR \fIvoid*\fR , \fIsize_t\fR , \fIsize_t\fR [address pointer, alignment,  size allocation] 
 .br
 \fBReturn Value: \fR \fIint\fR [0 (success), !0 (failure)]
-.TP
-.BR hc_aligned_alloc(\fR, size)
-Allocates size bytes of memory such that the allocation's base address is an exact multiple of the system's page size alignment, and returns the address pointer. Use this if your primary requirement is cross-platform C11 compliance outside of UNIX environments, and you don't mind the forced size rounding.
-.br
-
-\fBArguments: \fR  \fIsize_t\fR [size allocation] 
-.br
-\fBReturn Value: \fR \fIvoid*\fR [address pointer]
-.TP
-.BR hc_valloc(\fR, size)
-Drop-in replacement for: void *ptr = valloc(size). This version implements \fIhc_posix_memalign\fR.
-.br
-Note: The valloc() function was formally deprecated and withdrawn in 2001 with the release of the POSIX.1-2001 and SUSv3 (Single UNIX Specification, Version 3) standards.
-.br
-
-\fBArguments: \fR  \fIsize_t\fR [size allocation] 
-.br
-\fBReturn Value: \fR \fIvoid*\fR [address pointer]
-.TP
-.BR hc_C11_valloc(\fR, size)
-Drop-in replacement for: void *ptr = valloc(size). This version implements \fIhc_aligned_alloc\fR. Forces the size to be a multiple of alignment for alligned allocation.
-.br
-Note: The valloc() function was formally deprecated and withdrawn in 2001 with the release of the POSIX.1-2001 and SUSv3 (Single UNIX Specification, Version 3) standards.
-.br
-
-\fBArguments: \fR  \fIsize_t\fR [size allocation] 
-.br
-\fBReturn Value: \fR \fIvoid*\fR [address pointer]
 .TP
 .BR hc_realloc(\fRold_pntr, size)
 Reallocates the existing memory alloction pointed to by the old_pntr argument to a new area with the specified size. The original address in the array will be updated with the new one.
@@ -111,9 +83,6 @@ Reallocates the existing memory alloction pointed to by the old_pntr argument to
 \fBArguments: \fR \fIvoid*\fR , \fIsize_t\fR [address pointer, new size allocation] 
 .br
 \fBReturn Value: \fR \fIvoid*\fR [address pointer]
-
-
-
 .TP
 .BR hc_strdup(\fRaddr_pntr)
 Copies the content of a string pointed to by the addr_pntr. Updates the address array and next_index value.

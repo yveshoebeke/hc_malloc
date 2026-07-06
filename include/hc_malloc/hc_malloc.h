@@ -55,6 +55,7 @@ typedef struct {
 	int next_idx;
 	int capacity;
 	size_t pagesize;
+	size_t alignment;
 	void **addr;
 } Heap_Arena;
 
@@ -67,6 +68,11 @@ int hc_init();
 /* Frees all pointers stored in the Heap array and
    the Heap structure itself. */
 void hc_cleanup();
+
+/* (Public) Frees all pointers stored in the Heap array, 
+   reinitializes the address array to initial capacity
+   and resets index/capacity values. */
+int hc_reset();
 
 /* (Public) Frees address and removes it (NULLified) from the array */
 void hc_free(void*);
@@ -85,18 +91,7 @@ void *hc_malloc(size_t);
 void *hc_calloc(size_t, size_t);
 
 /* Every modern Linux, macOS, and BSD system fully supports posix_memalign(). */
-int hc_posix_memalign(void*, size_t);
-
-/* Cross platform C11 compliant outside UNIX environments. */
-void *hc_aligned_alloc(size_t);
-
-/* Drop-in replacement for: void *ptr = valloc(size); 
-   Implements hc_posixmemalign */
-void *hc_valloc(size_t);
-
-/* (Public) Drop-in replacement for: void *ptr = valloc(size);
-   C11 compliant, forces size allignment. Consider hc_alligned_alloc. */
-void *hc_C11_valloc(size_t);
+int hc_posix_memalign(void**, size_t, size_t);
 
 /* Reallocates previously defined memory to a 
    a newly defined sized memory area and updates
