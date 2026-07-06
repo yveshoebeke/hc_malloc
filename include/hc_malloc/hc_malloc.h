@@ -1,4 +1,5 @@
 /*
+
   Copyright (c) 2026 Yves Hoebeke and hc_malloc contributors
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,6 +19,7 @@
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
+
 */
 
 #ifndef HC_MALLOC_H
@@ -34,22 +36,27 @@ extern "C"
 #include <unistd.h>
 #include <errno.h>
 
-/* project version */
+// Project Version
 #define HC_MALLOC_VERSION_MAJOR 1
 #define HC_MALLOC_VERSION_MINOR 0
 #define HC_MALLOC_VERSION_PATCH 0
 
-/* Array size and growth */
+// Array size and expansion factor.
 #define HEAP_ADDR_ARRAY_SIZE 32
-/* Default pagesize if system pagesize is not set (unlimitted?) */
+
+// Default pagesize if system pagesize is not set. (unlimitted?)
 #define DEFAULT_MEMORY_PAGESIZE 4096
 
 /* 	
- The HC_MALLOC structure (Heap_Arena named): 
-	next_idx: next available index to store an address pointer.
-	capacity: current capacity of the array.
-	mempage_size: current system's mempry page size.
-	addr: array containing all the pointers or NULL if unused.
+
+  The HC_MALLOC structure (Heap_Arena named): 
+
+  next_idx: next available index to store an address pointer.
+  capacity: current capacity of the array.
+  pagesize: current system's mempry page size.
+  alignemnt: page boundry size for arena address array allocation.
+  addr: arena array containing all the pointers or NULL if unused.
+
 */
 typedef struct {
 	int next_idx;
@@ -60,52 +67,16 @@ typedef struct {
 } Heap_Arena;
 
 /* Public Functions: */
-
-/* Initializes the Heap structure and sets array capacity
-   to the HEAP_ADDR_ARRAY_SIZE constant. */
 int hc_init();
-
-/* Frees all pointers stored in the Heap array and
-   the Heap structure itself. */
 void hc_cleanup();
-
-/* (Public) Frees all pointers stored in the Heap array, 
-   reinitializes the address array to initial capacity
-   and resets index/capacity values. */
 int hc_reset();
-
-/* (Public) Frees address and removes it (NULLified) from the array */
 void hc_free(void*);
-
-/* Utility to display content of the Heap array */
 void hc_display();
-
-/* Allocates requested memory block, saves
-   the address pointer into the Heap array and
-   updates the next_idx value. */
 void *hc_malloc(size_t);
-
-/* Allocates requested memory block, initialized to NULL
-   and saves the address pointer into the Heap array and
-   updates the next_idx value. */
 void *hc_calloc(size_t, size_t);
-
-/* Every modern Linux, macOS, and BSD system fully supports posix_memalign(). */
 int hc_posix_memalign(void**, size_t, size_t);
-
-/* Reallocates previously defined memory to a 
-   a newly defined sized memory area and updates
-   the previously assigned pointer with
-   the new address pointer. */
 void *hc_realloc(void*, size_t);
-
-/* Identical to hc_realloc, but will free the old pointer upon failure.
-   (expand this later) */
 void *hc_reallocf(void*, size_t);
-
-/* Copies the content of given content to 
-   a Heap location, adds the address to the array
-   and updates the next_idx value. */
 char *hc_strdup(char*);
 
 #ifdef __cplusplus

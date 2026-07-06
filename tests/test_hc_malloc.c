@@ -50,7 +50,7 @@ int main() {
 	char *a_string_4 = hc_realloc(a_string_3, 128);
 	if ( a_string_4 == NULL ) { LOG_ERROR("a_string_4 hc_realloc failed"); }
 
-	strcpy(a_string_4, "Wind from to left: worstening weather");
+	strcpy(a_string_4, "Please excuse my dear aunt Sally.");
 
 	printf(BOLD_BLUE "hc dump after allocations (2):\n" RED_TEXT
 		"\ta_string_4: " GREEN_TEXT "%s" RED_TEXT " -> [" YELLOW_TEXT "%p" RED_TEXT "] (heap, from hc_realloc of q_string_3)\n\n" RESET_COLOR,
@@ -100,17 +100,22 @@ int main() {
 	continue_after_enter();
 
 	void *a_mem_area = NULL;
-	if ( hc_posix_memalign((void **)&a_mem_area, 32,  (100 * sizeof(double))) ) { LOG_ERROR("hc_posic_memalign allocation failed"); }
+	size_t alignment = 64;
+	if ( hc_posix_memalign((void **)&a_mem_area, alignment,  (100 * sizeof(double))) ) { LOG_ERROR("hc_posic_memalign allocation failed"); }
 	printf(BOLD_BLUE "hc dump after allocations (6):\n" RED_TEXT
-		"\tAllocated boundry aligned memory for 100 double-s:  -> [" YELLOW_TEXT "%p" RED_TEXT "]\n" RESET_COLOR
-		"\tCheck if aligned with pagesize boundry:\n"
-		"\t",
+		"\ta_mem_area: Allocated boundry aligned memory for 100 double values:  -> [" YELLOW_TEXT "%p" RED_TEXT "]\n" RESET_COLOR
+		"\n\tCheck if aligned with pagesize boundry:\n",
 		a_mem_area);
 
-	if (((uintptr_t)a_mem_area % 64) == 0) {
-		printf("< (uintptr)a_mem_area precent 64 is 0 > => Success! Address is perfectly aligned to %d bytes.\n", 64);
+
+	printf(GREEN_TEXT "\n\t\t[0x%lx] --decimal-> ( %lu %% %zu ) = %lu" RESET_COLOR "\n", (uintptr_t)a_mem_area, (uintptr_t)a_mem_area, alignment, ((uintptr_t)a_mem_area % alignment));
+
+	if (((uintptr_t)a_mem_area % alignment) == 0) {
+		printf("\t\t" BOLD_RED "< " GREEN_TEXT "(uintptr)a_mem_area %% %zu == 0" BOLD_RED " > " RESET_COLOR "=>" 
+		GREEN_TEXT " PASS " RESET_COLOR "Address is perfectly aligned to %zu bytes.\n\n", alignment, alignment);
 	} else {
-		printf("< (uintptr)a_mem_area percent 64 is not 0 > => Alignment failure for page size %d bytes.\n", 64);
+		printf("\t\t" BOLD_RED "< " GREEN_TEXT "(uintptr)a_mem_area %% %zu != 0" BOLD_RED " > " RESET_COLOR "=>" 
+		RED_TEXT " FAIL " RESET_COLOR "Alignment failure for page size %zu bytes.\n\n", alignment, alignment);
 	}
 
 	hc_display();

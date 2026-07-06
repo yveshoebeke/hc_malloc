@@ -25,10 +25,11 @@ enable_testing()
 add_subdirectory(tests)
 
 # Install the mylib.a binary to /usr/local/lib
-#install(TARGETS hc_malloc DESTINATION lib)
+install(TARGETS hc_malloc DESTINATION lib)
 
+include(GNUInstallDirs)
 # Install the public header directory to /usr/local/include/mylib/
-install(DIRECTORY include/hc_malloc DESTINATION include)
+install(DIRECTORY include/hc_malloc DESTINATION include COMPONENT SystemFiles)
 
 # Auxiliaries locations
 set(DOC_DEST /usr/local/share/hc_malloc/doc)
@@ -36,14 +37,20 @@ set(HTML_DOC_DEST ${DOC_DEST}/html)
 set(PDF_DOC_DEST ${DOC_DEST}/pdf)
 set(LICENSE_DEST ${DOC_DEST}/license)
 set(MAN_DEST /usr/local/share/man/man3)
+set(CUSTOMER_HOME "$ENV{HOME}")
+set(TEST_DEST "${CUSTOMER_HOME}/.local/share/hc_malloc/tests")
 
 # Install auxiliaries - documentation.
-install(FILES doc/README.md DESTINATION ${DOC_DEST})
-install(FILES doc/html/hc_malloc.html DESTINATION ${HTML_DOC_DEST})
-install(FILES doc/pdf/hc_malloc.pdf DESTINATION ${PDF_DOC_DEST})
+install(FILES doc/README.md DESTINATION ${DOC_DEST} COMPONENT SystemFiles)
+install(FILES doc/html/hc_malloc.html DESTINATION ${HTML_DOC_DEST} COMPONENT SystemFiles)
+install(FILES doc/pdf/hc_malloc.pdf DESTINATION ${PDF_DOC_DEST} COMPONENT SystemFiles)
 # Install auxiliaries - license.
-install(FILES LICENSE DESTINATION ${LICENSE_DEST})
+install(FILES LICENSE DESTINATION ${LICENSE_DEST} COMPONENT SystemFiles)
 # Install auxiliaries - man page.
 ##install(FILES doc/man/hc_malloc.3 DESTINATION ${MAN_DEST})
 ##install(FILES doc/man/hc_realloc.3 DESTINATION ${MAN_DEST})
-install(DIRECTORY doc/man/ DESTINATION ${MAN_DEST})
+install(DIRECTORY doc/man/ DESTINATION ${MAN_DEST} COMPONENT SystemFiles)
+install(PROGRAMS "${CMAKE_BINARY_DIR}/tests/test_runner" 
+	DESTINATION ${TEST_DEST} 
+	COMPONENT UserFiles)
+

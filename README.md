@@ -12,7 +12,7 @@ The hc prefix alludes to the internally implemented Heap Control functionality.
 ### Install
 
 * From the command line (terminal):
-    * ``` curl -SL https://yveshoebeke.github.io/install/deploy_hc_malloc.sh | sh ```
+    * ``` curl -L https://yveshoebeke.github.io/install/deploy_hc_malloc.sh | sh ```
 * The installation process will start.
 * Your system password will be required to install the required files.
 * Pre-requisite to run this install is that your system needs to have ```make```, ```cmake``` and ```gcc```/```clang``` tools installed.
@@ -65,6 +65,18 @@ The hc prefix alludes to the internally implemented Heap Control functionality.
 * ```hc_realloc(old_pntr, size)```- realloc with different size and retain orig. value.
 * ```hc_reallocf(old_pntr, size)```- drop-in replacement for reallocf.
 * ```hc_strdup(addr_pntr)``` - same as above, but moves content to heap pointed area.
+
+---
+
+### TEST
+
+* A test program was installed here:
+    * ```HOME/.local/share/hc_malloc/test_runner```
+* Showing the values inside the Heap Arena, It will demonstrate the following:
+    * allocating, removing data location with their content.
+    * heap address arena expansion.
+    * memory page boundry alignment allocation.
+    * reset and clear.
 
 ---
 
