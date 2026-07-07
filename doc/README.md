@@ -71,12 +71,12 @@ The hc prefix alludes to the internally implemented Heap Control functionality.
 ### TEST
 
 * A test program was installed here:
-    * ```HOME/.local/share/hc_malloc/test_runner```
+    * ```HOME/.local/share/hc_malloc/tests/test_hc_malloc```
 * Showing the values inside the Heap Arena, It will demonstrate the following:
     * allocating, removing data location with their content.
-    * heap address arena expansion.
+    * heap arena address array expansion.
     * memory page boundry alignment allocation.
-    * reset and clear.
+    * reset arena address array.
 
 ---
 
