@@ -48,7 +48,6 @@ extern "C"
 #define DEFAULT_MEMORY_PAGESIZE 4096
 
 /* 	
-
   The HC_MALLOC structure (Heap_Arena named): 
 
   next_idx: next available index to store an address pointer.
@@ -56,7 +55,6 @@ extern "C"
   pagesize: current system's mempry page size.
   alignemnt: page boundry size for arena address array allocation.
   addr: arena array containing all the pointers or NULL if unused.
-
 */
 typedef struct {
 	int next_idx;
@@ -66,7 +64,7 @@ typedef struct {
 	void **addr;
 } Heap_Arena;
 
-/* Public Functions: */
+// Public Functions:
 int hc_init();
 void hc_cleanup();
 int hc_reset();

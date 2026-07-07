@@ -47,9 +47,8 @@ install(FILES doc/pdf/hc_malloc.pdf DESTINATION ${PDF_DOC_DEST} COMPONENT System
 # Install auxiliaries - license.
 install(FILES LICENSE DESTINATION ${LICENSE_DEST} COMPONENT SystemFiles)
 # Install auxiliaries - man page.
-##install(FILES doc/man/hc_malloc.3 DESTINATION ${MAN_DEST})
-##install(FILES doc/man/hc_realloc.3 DESTINATION ${MAN_DEST})
 install(DIRECTORY doc/man/ DESTINATION ${MAN_DEST} COMPONENT SystemFiles)
+# Install auxiliaries - test facility.
 install(PROGRAMS "${CMAKE_BINARY_DIR}/tests/test_hc_malloc" 
 	DESTINATION ${TEST_DEST} 
 	COMPONENT UserFiles)
