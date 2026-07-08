@@ -15,8 +15,8 @@ target_include_directories(hc_malloc PUBLIC
 )
 
 # Optional: Setup 'make install' commands for the client
-install(TARGETS hc_malloc DESTINATION lib)
-install(DIRECTORY include/hc_malloc DESTINATION include)
+install(TARGETS hc_malloc DESTINATION lib COMPONENT SystemFiles)
+install(DIRECTORY include/hc_malloc DESTINATION include COMPONENT SystemFiles)
 
 # Enable testing tools
 enable_testing()
